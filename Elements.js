@@ -106,6 +106,7 @@ const DefView = ({ active, setActive, breaks, setShowBreak }) => {
           shadowOffset: { width: 1, height: 1 },
           shadowOpacity: 0.3,
           shadowRadius: 1,
+          elevation: 12,
         },
       ]}
     >

@@ -1,10 +1,21 @@
 import React, { useState } from "react";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import {
+  Dimensions,
+  Button,
+  StyleSheet,
+  View,
+  SafeAreaView,
+} from "react-native";
 import Elements from "./Elements";
 
-const breaks = [100, 200, 300];
+const screenWidth = Math.round(Dimensions.get("window").width);
 
-const elements = ["a", "b"];
+const getBreaks = howMany =>
+  new Array(howMany)
+    .fill(null)
+    .map((_, idx) => (screenWidth / (howMany + 1)) * (idx + 1));
+
+const breaks = getBreaks(12);
 
 const styles = StyleSheet.create({
   container: {
@@ -32,11 +43,19 @@ const styles = StyleSheet.create({
 
 export default function App() {
   const [showBreak, setShowBreak] = useState(false);
-
+  const [elements, setElements] = useState([]);
+  const [showBreaks, setShowBreaks] = useState(false);
   const [active, setActive] = useState(elements[0]);
 
   return (
     <SafeAreaView style={styles.container}>
+      <Button
+        title="+"
+        onPress={() => setElements(a => a.concat([Math.random()]))}
+      />
+
+      <Button title="show grid" onPress={() => setShowBreaks(a => !a)} />
+
       {elements.map(id => (
         <Elements
           key={id}
@@ -56,7 +75,7 @@ export default function App() {
             styles.line,
             {
               left: breakVal,
-              display: breakVal === showBreak ? "flex" : "none",
+              display: showBreaks || breakVal === showBreak ? "flex" : "none",
             },
           ]}
         />
