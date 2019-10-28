@@ -7,6 +7,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import Elements from "./Elements";
+import { uniq } from "ramda";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -20,6 +21,7 @@ const breaks = getBreaks(8);
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    flex: 1,
     backgroundColor: "#F5FCFF",
   },
 
@@ -46,8 +48,21 @@ export default function App() {
 
   const [showBreaks, setShowBreaks] = useState(false);
 
+  const [breaks, _setHorizontalBrakes] = useState(getBreaks(7));
+
   const [elements, setElements] = useState([]);
   const [active, setActive] = useState(elements[0]);
+
+  const setHorizontalBrakes = () => {
+    _setHorizontalBrakes(
+      uniq(
+        elements
+          .map(({ position }) => position)
+          .map(({ left, right }) => [parseInt(left), parseInt(right)])
+          .flat(),
+      ),
+    );
+  };
 
   const setPosition = idx => handler =>
     setElements(elements => {
@@ -86,6 +101,8 @@ export default function App() {
           <Elements
             key={key}
             key={key}
+            setHorizontalBrakes={setHorizontalBrakes}
+            /* horizontalBreaks={horizontalBreaks} */
             setPosition={setPosition(idx)}
             position={position}
             active={active === key}

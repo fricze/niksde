@@ -31,9 +31,16 @@ const DefView = ({
   setActive,
   breaks,
   setShowBreak,
+  setHorizontalBrakes,
+  horizontalBreaks,
 }) => {
   const width = position.right - position.left;
   const height = position.bottom - position.top;
+
+  const onPanResponderRelease = () => {
+    setShowBreak(false);
+    setHorizontalBrakes();
+  };
 
   const panResponderCorner = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -61,7 +68,7 @@ const DefView = ({
         }));
       }
     },
-    onPanResponderRelease: () => setShowBreak(false),
+    onPanResponderRelease,
   });
 
   const panResponderUpLeft = PanResponder.create({
@@ -90,7 +97,7 @@ const DefView = ({
         }));
       }
     },
-    onPanResponderRelease: () => setShowBreak(false),
+    onPanResponderRelease,
   });
 
   const [leftIn, setLeftIn] = useState(0);
@@ -153,7 +160,7 @@ const DefView = ({
       setLeftIn(e.nativeEvent.locationX);
       setActive();
     },
-    onPanResponderRelease: () => setShowBreak(false),
+    onPanResponderRelease,
   });
 
   return (
