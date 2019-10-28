@@ -24,14 +24,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const DefView = ({ active, setActive, breaks, setShowBreak }) => {
-  const [position, setPosition] = useState({
-    top: 30,
-    left: 30,
-    right: 80,
-    bottom: 80,
-  });
-
+const DefView = ({
+  position,
+  setPosition,
+  active,
+  setActive,
+  breaks,
+  setShowBreak,
+}) => {
   const width = position.right - position.left;
   const height = position.bottom - position.top;
 
@@ -106,10 +106,10 @@ const DefView = ({ active, setActive, breaks, setShowBreak }) => {
       const center = left + width / 2;
 
       const onBreakCenter = breaks.find(
-        breakVal => Math.abs(center - breakVal) < 15
+        breakVal => Math.abs(center - breakVal) < 15,
       );
       const onBreakLeft = breaks.find(
-        breakVal => Math.abs(left - breakVal) < 15
+        breakVal => Math.abs(left - breakVal) < 15,
       );
 
       const onBreak = Math.min([onBreakCenter, onBreakLeft].filter(a => a));
@@ -120,34 +120,34 @@ const DefView = ({ active, setActive, breaks, setShowBreak }) => {
         const left = onBreakCenter - width / 2;
         const right = left + width;
 
-        setPosition({
+        setPosition(() => ({
           left,
           right,
           top,
           bottom,
-        });
+        }));
 
         return;
       } else if (onBreakLeft) {
         const left = onBreakLeft;
         const right = left + width;
 
-        setPosition({
+        setPosition(() => ({
           left,
           right,
           top,
           bottom,
-        });
+        }));
 
         return;
       }
 
-      setPosition({
+      setPosition(() => ({
         left,
         right,
         top,
         bottom,
-      });
+      }));
     },
     onPanResponderGrant: e => {
       setLeftIn(e.nativeEvent.locationX);

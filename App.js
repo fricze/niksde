@@ -43,9 +43,17 @@ const styles = StyleSheet.create({
 
 export default function App() {
   const [showBreak, setShowBreak] = useState(false);
-  const [elements, setElements] = useState([]);
+
   const [showBreaks, setShowBreaks] = useState(false);
+
+  const [elements, setElements] = useState([]);
   const [active, setActive] = useState(elements[0]);
+
+  const setPosition = idx => handler =>
+    setElements(elements => {
+      elements[idx].position = handler(elements[idx].position);
+      return [...elements];
+    });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,17 +63,33 @@ export default function App() {
       >
         <Button
           title="+"
-          onPress={() => setElements(a => a.concat([Math.random()]))}
+          onPress={() =>
+            setElements(a =>
+              a.concat([
+                {
+                  key: Math.random(),
+                  position: {
+                    top: 30,
+                    left: 30,
+                    right: 80,
+                    bottom: 80,
+                  },
+                },
+              ]),
+            )
+          }
         />
 
         <Button title="show grid" onPress={() => setShowBreaks(a => !a)} />
 
-        {elements.map(id => (
+        {elements.map(({ key, position }, idx) => (
           <Elements
-            key={id}
-            id={id}
-            active={active === id}
-            setActive={() => setActive(id)}
+            key={key}
+            key={key}
+            setPosition={setPosition(idx)}
+            position={position}
+            active={active === key}
+            setActive={() => setActive(key)}
             breaks={breaks}
             showBreak={showBreak}
             setShowBreak={setShowBreak}
