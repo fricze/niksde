@@ -33,6 +33,7 @@ const DefView = ({
   setShowBreak,
   setHorizontalBrakes,
   horizontalBreaks,
+  color,
   id,
 }) => {
   const width = position.right - position.left;
@@ -200,6 +201,7 @@ const DefView = ({
           left: position.left,
           top: position.top,
           borderColor: active ? "#477BE3" : "transparent",
+          backgroundColor: color,
           width,
           height,
           zIndex: active ? 5 : 0,

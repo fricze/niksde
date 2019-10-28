@@ -7,7 +7,12 @@ import {
   SafeAreaView,
 } from "react-native";
 import Elements from "./Elements";
-import { propEq, reject, uniq } from "ramda";
+import { findIndex, propEq, reject, uniq } from "ramda";
+import { ColorPicker } from "react-native-color-picker";
+
+const Picker = ({ selected }) => (
+  <ColorPicker onColorSelected={selected} style={{ flex: 1 }} />
+);
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -78,12 +83,31 @@ export default function App() {
       return [...elements];
     });
 
+  const setColor = (key, color) =>
+    setElements(elements => {
+      const idx = findIndex(propEq("key", key), elements);
+      elements[idx].color = color;
+      return [...elements];
+    });
+
   return (
     <SafeAreaView style={styles.container}>
       <View
         onStartShouldSetResponder={() => setActive(-1)}
         style={styles.container}
       >
+        <View
+          style={{
+            width: 300,
+            height: 300,
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+          }}
+        >
+          <Picker selected={color => setColor(active, color)} />
+        </View>
+
         <Button
           title="+"
           onPress={() =>
@@ -105,10 +129,11 @@ export default function App() {
 
         <Button title="show grid" onPress={() => setShowBreaks(a => !a)} />
 
-        {elements.map(({ key, position }, idx) => (
+        {elements.map(({ key, color, position }, idx) => (
           <Elements
             key={key}
             id={key}
+            color={color || "skyblue"}
             setHorizontalBrakes={setHorizontalBrakes}
             /* horizontalBreaks={horizontalBreaks} */
             setPosition={setPosition(idx)}
