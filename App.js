@@ -15,15 +15,12 @@ const getBreaks = howMany =>
     .fill(null)
     .map((_, idx) => (screenWidth / (howMany + 1)) * (idx + 1));
 
-const breaks = getBreaks(12);
+const breaks = getBreaks(8);
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: "#F5FCFF",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "red",
   },
 
   line: {
@@ -41,6 +38,9 @@ const styles = StyleSheet.create({
   },
 });
 
+// TODO. take positions of elements level up, so breaks can be created
+// based on elements, not only document size
+
 export default function App() {
   const [showBreak, setShowBreak] = useState(false);
   const [elements, setElements] = useState([]);
@@ -49,37 +49,42 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Button
-        title="+"
-        onPress={() => setElements(a => a.concat([Math.random()]))}
-      />
-
-      <Button title="show grid" onPress={() => setShowBreaks(a => !a)} />
-
-      {elements.map(id => (
-        <Elements
-          key={id}
-          id={id}
-          active={active === id}
-          setActive={() => setActive(id)}
-          breaks={breaks}
-          showBreak={showBreak}
-          setShowBreak={setShowBreak}
+      <View
+        onStartShouldSetResponder={() => setActive(-1)}
+        style={styles.container}
+      >
+        <Button
+          title="+"
+          onPress={() => setElements(a => a.concat([Math.random()]))}
         />
-      ))}
 
-      {breaks.map(breakVal => (
-        <View
-          key={breakVal}
-          style={[
-            styles.line,
-            {
-              left: breakVal,
-              display: showBreaks || breakVal === showBreak ? "flex" : "none",
-            },
-          ]}
-        />
-      ))}
+        <Button title="show grid" onPress={() => setShowBreaks(a => !a)} />
+
+        {elements.map(id => (
+          <Elements
+            key={id}
+            id={id}
+            active={active === id}
+            setActive={() => setActive(id)}
+            breaks={breaks}
+            showBreak={showBreak}
+            setShowBreak={setShowBreak}
+          />
+        ))}
+
+        {breaks.map(breakVal => (
+          <View
+            key={breakVal}
+            style={[
+              styles.line,
+              {
+                left: breakVal,
+                display: showBreaks || breakVal === showBreak ? "flex" : "none",
+              },
+            ]}
+          />
+        ))}
+      </View>
     </SafeAreaView>
   );
 }

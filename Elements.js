@@ -38,26 +38,33 @@ const DefView = ({ active, setActive, breaks, setShowBreak }) => {
   const panResponderCorner = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (e, g) => {
-      setPosition(s => ({
-        ...s,
-        right: parseInt(g.moveX),
-        bottom: parseInt(g.moveY),
-      }));
+      const right = g.moveX;
+      const bottom = g.moveY;
+
+      const onBreak = breaks.find(breakVal => Math.abs(right - breakVal) < 15);
+
+      setShowBreak(onBreak);
+
+      if (onBreak) {
+        const right = onBreak;
+
+        setPosition(s => ({
+          ...s,
+          right: parseInt(right),
+          bottom: parseInt(bottom),
+        }));
+      } else {
+        setPosition(s => ({
+          ...s,
+          right: parseInt(right),
+          bottom: parseInt(bottom),
+        }));
+      }
     },
+    onPanResponderRelease: () => setShowBreak(false),
   });
 
   const panResponderUpLeft = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderMove: (e, g) => {
-      setPosition(s => ({
-        ...s,
-        left: parseInt(g.moveX),
-        top: parseInt(g.moveY),
-      }));
-    },
-  });
-
-  const panResponderCenter = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (e, g) => {
       const left = g.moveX;
@@ -70,29 +77,88 @@ const DefView = ({ active, setActive, breaks, setShowBreak }) => {
       if (onBreak) {
         const left = onBreak;
 
-        setPosition(() => ({
-          left: parseInt(left - width / 2),
-          right: parseInt(left + width / 2),
-          top: parseInt(top - height / 2),
-          bottom: parseInt(top + height / 2),
+        setPosition(s => ({
+          ...s,
+          left: parseInt(left),
+          top: parseInt(top),
         }));
       } else {
-        setPosition(() => ({
-          left: parseInt(left - width / 2),
-          right: parseInt(left + width / 2),
-          top: parseInt(top - height / 2),
-          bottom: parseInt(top + height / 2),
+        setPosition(s => ({
+          ...s,
+          left: parseInt(left),
+          top: parseInt(top),
         }));
       }
     },
-    onPanResponderRelease: () => {
-      setShowBreak(false);
+    onPanResponderRelease: () => setShowBreak(false),
+  });
+
+  const [leftIn, setLeftIn] = useState(0);
+
+  const panResponderWhole = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderMove: (e, g) => {
+      const left = g.moveX - leftIn;
+      const right = left + width;
+      const top = g.dy + position.top;
+      const bottom = g.dy + position.bottom;
+
+      const center = left + width / 2;
+
+      const onBreakCenter = breaks.find(
+        breakVal => Math.abs(center - breakVal) < 15
+      );
+      const onBreakLeft = breaks.find(
+        breakVal => Math.abs(left - breakVal) < 15
+      );
+
+      const onBreak = Math.min([onBreakCenter, onBreakLeft].filter(a => a));
+
+      setShowBreak(onBreak);
+
+      if (onBreakCenter) {
+        const left = onBreakCenter - width / 2;
+        const right = left + width;
+
+        setPosition({
+          left,
+          right,
+          top,
+          bottom,
+        });
+
+        return;
+      } else if (onBreakLeft) {
+        const left = onBreakLeft;
+        const right = left + width;
+
+        setPosition({
+          left,
+          right,
+          top,
+          bottom,
+        });
+
+        return;
+      }
+
+      setPosition({
+        left,
+        right,
+        top,
+        bottom,
+      });
     },
+    onPanResponderGrant: e => {
+      setLeftIn(e.nativeEvent.locationX);
+      setActive();
+    },
+    onPanResponderRelease: () => setShowBreak(false),
   });
 
   return (
     <View
-      onStartShouldSetResponder={setActive}
+      {...panResponderWhole.panHandlers}
       style={[
         styles.box,
         {
@@ -136,22 +202,6 @@ const DefView = ({ active, setActive, breaks, setShowBreak }) => {
                 top: "100%",
                 marginLeft: -6,
                 marginTop: -6,
-              },
-            ]}
-          />
-
-          <View
-            {...panResponderCenter.panHandlers}
-            style={[
-              styles.circle,
-              {
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                marginLeft: -14,
-                marginTop: -14,
-                width: 30,
-                height: 30,
               },
             ]}
           />
