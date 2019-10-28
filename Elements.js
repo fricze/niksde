@@ -33,6 +33,7 @@ const DefView = ({
   setShowBreak,
   setHorizontalBrakes,
   horizontalBreaks,
+  id,
 }) => {
   const width = position.right - position.left;
   const height = position.bottom - position.top;
@@ -40,6 +41,10 @@ const DefView = ({
   const onPanResponderRelease = () => {
     setShowBreak(false);
     setHorizontalBrakes();
+  };
+
+  const onPanResponderGrant = () => {
+    setHorizontalBrakes(id);
   };
 
   const panResponderCorner = PanResponder.create({
@@ -69,6 +74,7 @@ const DefView = ({
       }
     },
     onPanResponderRelease,
+    onPanResponderGrant,
   });
 
   const panResponderUpLeft = PanResponder.create({
@@ -98,6 +104,7 @@ const DefView = ({
       }
     },
     onPanResponderRelease,
+    onPanResponderGrant,
   });
 
   const [leftIn, setLeftIn] = useState(0);
@@ -118,12 +125,13 @@ const DefView = ({
       const onBreakLeft = breaks.find(
         breakVal => Math.abs(left - breakVal) < 15,
       );
-
-      const onBreak = Math.min([onBreakCenter, onBreakLeft].filter(a => a));
-
-      setShowBreak(onBreak);
+      const onBreakRight = breaks.find(
+        breakVal => Math.abs(right - breakVal) < 15,
+      );
 
       if (onBreakCenter) {
+        setShowBreak(onBreakCenter);
+
         const left = onBreakCenter - width / 2;
         const right = left + width;
 
@@ -136,6 +144,8 @@ const DefView = ({
 
         return;
       } else if (onBreakLeft) {
+        setShowBreak(onBreakLeft);
+
         const left = onBreakLeft;
         const right = left + width;
 
@@ -147,7 +157,23 @@ const DefView = ({
         }));
 
         return;
+      } else if (onBreakRight) {
+        setShowBreak(onBreakRight);
+
+        const right = onBreakRight;
+        const left = right - width;
+
+        setPosition(() => ({
+          left,
+          right,
+          top,
+          bottom,
+        }));
+
+        return;
       }
+
+      setShowBreak(-1);
 
       setPosition(() => ({
         left,
@@ -159,6 +185,8 @@ const DefView = ({
     onPanResponderGrant: e => {
       setLeftIn(e.nativeEvent.locationX);
       setActive();
+
+      onPanResponderGrant();
     },
     onPanResponderRelease,
   });

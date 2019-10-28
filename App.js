@@ -7,7 +7,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import Elements from "./Elements";
-import { uniq } from "ramda";
+import { propEq, reject, uniq } from "ramda";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -53,12 +53,20 @@ export default function App() {
   const [elements, setElements] = useState([]);
   const [active, setActive] = useState(elements[0]);
 
-  const setHorizontalBrakes = () => {
+  const setHorizontalBrakes = (active = null) => {
     _setHorizontalBrakes(
       uniq(
-        elements
+        reject(propEq("key", active), elements)
           .map(({ position }) => position)
-          .map(({ left, right }) => [parseInt(left), parseInt(right)])
+          .map(({ left, right }) => {
+            left = parseInt(left);
+            right = parseInt(right);
+
+            const width = right - left;
+            const center = left + width / 2;
+
+            return [left, center, right];
+          })
           .flat(),
       ),
     );
@@ -100,7 +108,7 @@ export default function App() {
         {elements.map(({ key, position }, idx) => (
           <Elements
             key={key}
-            key={key}
+            id={key}
             setHorizontalBrakes={setHorizontalBrakes}
             /* horizontalBreaks={horizontalBreaks} */
             setPosition={setPosition(idx)}
