@@ -8,10 +8,17 @@ import {
 } from "react-native";
 import Elements from "./Elements";
 import { findIndex, propEq, reject, uniq } from "ramda";
-import { ColorPicker } from "react-native-color-picker";
+import { ColorWheel } from "./ColorWheel";
+import colorsys from "colorsys";
 
 const Picker = ({ selected }) => (
-  <ColorPicker onColorSelected={selected} style={{ flex: 1 }} />
+  <ColorWheel
+    initialColor="#ee0000"
+    onColorChange={color => selected(colorsys.hsv2Hex(color))}
+    onColorChangeComplete={color => selected(colorsys.hsv2Hex(color))}
+    style={{ width: 200 }}
+    thumbStyle={{ height: 30, width: 30, borderRadius: 30 }}
+  />
 );
 
 const screenWidth = Math.round(Dimensions.get("window").width);
@@ -86,8 +93,12 @@ export default function App() {
   const setColor = (key, color) =>
     setElements(elements => {
       const idx = findIndex(propEq("key", key), elements);
-      elements[idx].color = color;
-      return [...elements];
+      if (elements[idx]) {
+        elements[idx].color = color;
+        return [...elements];
+      }
+
+      return elements;
     });
 
   return (
@@ -101,8 +112,8 @@ export default function App() {
             width: 300,
             height: 300,
             position: "absolute",
+            zIndex: 5,
             bottom: 0,
-            right: 0,
           }}
         >
           <Picker selected={color => setColor(active, color)} />

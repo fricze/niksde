@@ -18,7 +18,9 @@
     "ramda": "^0.26.1",
     "react": "16.9.0",
     "react-native": "0.61.2",
+    "react-native-color-palette": "^2.1.0",
     "react-native-color-picker": "^0.4.2",
+    "react-native-color-wheel": "^0.1.7",
     "react-native-pose": "^0.9.1",
     "react-native-svg": "^9.13.2",
     "react-native-viewport-units": "^0.0.5"
